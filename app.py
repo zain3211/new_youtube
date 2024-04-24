@@ -86,7 +86,7 @@ def get_text_as_word_doc(video_url):
             doc.add_paragraph(segment['text'])
 
         # Save the Word document
-        download_dir = os.path.join(os.path.expanduser("~"), "Documents")
+        download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
         sanitized_title = re.sub(r'[<>:"/\\|?*]', '', video_id)
         word_path = os.path.join(download_dir, f"{sanitized_title}.docx")
         doc.save(word_path)
