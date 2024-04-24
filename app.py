@@ -106,7 +106,7 @@ def main():
             st.video(f"https://www.youtube.com/embed/{video_id}")
 
     st.sidebar.title("Select any option to proceed:")
-
+    video_downloaded = False
     if st.sidebar.button("Download Video"):
         if not video_url:
             st.warning("Please enter a YouTube URL to download the video.")
@@ -115,22 +115,58 @@ def main():
             if selected_quality:
                 with st.spinner("Downloading Video..."):
                     downloaded_file_path = download_youtube_video(video_url, selected_quality)
-
+                    if downloaded_file_path:
+                        video_downloaded = True
+    if video_downloaded:
+        # Provide a download button for the user
+        file_content = open(downloaded_file_path, 'rb').read()
+        st.download_button(
+            label="Click here to download",
+            data=file_content,
+            file_name=os.path.basename(downloaded_file_path),
+            key="download_button",
+        )
+    audio_downloaded = False
     if st.sidebar.button("Download Audio"):
         if not video_url:
             st.warning("Please enter a YouTube URL to download the Audio.")
         else:
             with st.spinner("Downloading Audio..."):
                 downloaded_audio_path = download_youtube_audio(video_url)
+                if downloaded_audio_path:
+                    audio_downloaded = True
+    if audio_downloaded:
+        # Provide a download button for the user
+        file_content = open(downloaded_audio_path, 'rb').read()
+        st.download_button(
+            label="Click here to download",
+            data=file_content,
+            file_name=os.path.basename(downloaded_audio_path),
+            key="download_button",
+        )
 
+    transcript_downloaded = False
     if st.sidebar.button("Generate Transcript PDF"):
         if not video_url:
             st.warning("Please enter a YouTube URL to generate the transcript PDF.")
         else:
             with st.spinner("Generating Transcript PDF..."):
-                pdf_file_path = get_text_as_word_doc(video_url)
+                pdf_file_path = get_text_as_word_doc(video_url)  # Ensure this function returns the file path
                 if pdf_file_path:
+                    transcript_downloaded = True
                     st.success("Transcript PDF generated successfully.")
+
+    if transcript_downloaded:
+        # Provide a download button for the transcript PDF
+        with open(pdf_file_path, 'rb') as pdf_file:
+            pdf_file_content = pdf_file.read()
+            st.download_button(
+                label="Click here to download the transcript PDF",
+                data=pdf_file_content,
+                file_name=os.path.basename(pdf_file_path),
+                key="transcript_download_button",
+                mime='application/pdf'
+            )
 
 if __name__ == "__main__":
     main()
